@@ -1,29 +1,27 @@
 from flask import Flask, redirect,url_for
 
-from .config import DevConfig
 from .models import db
 from qianblog.controllers import blog
 
+def create_app(object_name):
+    """Create the app instance via `Factory Method`"""
 
+    app = Flask(__name__)
+    # Set the app config 
+    app.config.from_object(object_name)
 
-app = Flask(__name__)
+    # Will be load the SQLALCHEMY_DATABASE_URL from config.py to db object
+    db.init_app(app)
 
-# Get the config from object of DecConfig
-# 使用 onfig.from_object() 而不使用 app.config['DEBUG'] 是因为这样可以加载 class DevConfig 的配置变量集合，而不需要一项一项的添加和修改。
-app.config.from_object(DevConfig)
+    @app.route('/')
+    def index():
+        # Redirect the Request_url '/' to '/blog/'
+        return redirect(url_for('blog.home'))
 
-# Will be load the SQLALCHEMY_DATABASE_URL from config.py to db object
-db.init_app(app)
+    # Register the Blueprint into app object
+    app.register_blueprint(blog.blog_blueprint)
 
-@app.route('/')
-def index():
-    # Redirect the Request_url '/' to '/blog/'
-    return redirect(url_for('blog.home'))
+    return app
 
-# Register the Blueprint into app object
-app.register_blueprint(blog.blog_blueprint)
-
-if __name__ == '__main__':
-    app.run()
 
 
