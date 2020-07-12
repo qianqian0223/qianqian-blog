@@ -1,7 +1,11 @@
 class Config(object):
     """Base config class."""
-    SECRET_KEY = '2088d15f95dd7d56322afd9b699e00e3'
-    
+    # WTForm secret key
+    SECRET_KEY = 'WTForms key'
+    # reCAPTCHA Public key and Private key
+    RECAPTCHA_PUBLIC_KEY = "6Lc7ebAZAAAAABnFMbhL2U2o4GwvaR0qKGdbrLN1"
+    RECAPTCHA_PRIVATE_KEY = "6Lc7ebAZAAAAAPmCqULtI1BscCtftz96M2QYNSD2"
+
 
 class ProdConfig(Config):
     """Production config class."""

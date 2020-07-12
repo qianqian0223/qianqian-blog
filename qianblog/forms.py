@@ -1,5 +1,5 @@
-from flask_wtf import Form
-
+#from flask_wtf import Form, RecaptchaField
+from flask_wtf import FlaskForm, RecaptchaField
 
 import re
 from wtforms import ValidationError
@@ -25,7 +25,7 @@ def custom_email(form_object, field_object):
 
 
 
-class CommentForm(Form):
+class CommentForm(FlaskForm):
     """Form vaildator for comment."""
 
     # Set some field(InputBox) for enter the data.
@@ -36,10 +36,10 @@ class CommentForm(Form):
 
     text = TextField(u'Comment', validators=[DataRequired()])
 
-class LoginForm(Form):
+class LoginForm(FlaskForm):
     """Login Form"""
 
-    username = StringField('Username', [DataRequired(), Length(max=255)])
+    username = StringField('Usermame', [DataRequired(), Length(max=255)])
     password = PasswordField('Password', [DataRequired()])
 
     def validate(self):
@@ -61,5 +61,28 @@ class LoginForm(Form):
             self.username.errors.append('Invalid username or password.')
             return False
 
-        return True    
+        return True
+
+
+class RegisterForm(FlaskForm):
+    """Register Form."""
+
+    username = StringField('Username', [DataRequired(), Length(max=255)])
+    password = PasswordField('Password', [DataRequired(), Length(min=8)])
+    comfirm = PasswordField('Confirm Password', [DataRequired(), EqualTo('password')])
+    recaptcha = RecaptchaField()
+
+    def validate(self):
+        check_validate = super(RegisterForm, self).validate()
+
+        # If validator no pass
+        if not check_validate:
+            return False
+
+        # Check the user whether already exist.
+        user = User.query.filter_by(username=self.username.data).first()
+        if user:
+            self.username.errors.append('User with that name already exists.')
+            return False
+        return True
 
