@@ -3,6 +3,8 @@ from flask import Flask, redirect,url_for
 from .models import db
 from qianblog.controllers import blog
 
+from qianblog.extensions import bcrypt
+
 def create_app(object_name):
     """Create the app instance via `Factory Method`"""
 
@@ -12,6 +14,8 @@ def create_app(object_name):
 
     # Will be load the SQLALCHEMY_DATABASE_URL from config.py to db object
     db.init_app(app)
+    # Init the Flask-Bcrypt via app object
+    bcrypt.init_app(app)
 
     @app.route('/')
     def index():
