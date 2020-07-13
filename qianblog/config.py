@@ -17,5 +17,9 @@ class DevConfig(Config):
     DEBUG = True
     # MySQL connection
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://user:123456@127.0.0.1:3306/qianblog'
+    
+    # Celery <--> RabbitMQ connection
+    CELERY_RESULT_BACKEND = "amqp://guest:guest@10.0.0.8:5672//"
+    CELERY_BROKER_URL = "amqp://guest:guest@10.0.0.8:5672//"
 
 

@@ -6,6 +6,11 @@ from flask_principal import identity_loaded, UserNeed, RoleNeed
 
 from qianblog.extensions import bcrypt,openid,login_manager,principals
 from flask_login import current_user
+from qianblog.extensions import flask_celery
+from sqlalchemy import event
+
+from qianblog.models import Reminder
+from qianblog.tasks import on_reminder_save
 
 def create_app(object_name):
     """Create the app instance via `Factory Method`"""
@@ -25,6 +30,14 @@ def create_app(object_name):
     login_manager.init_app(app)
     # Init the Flask-Prinicpal via app object
     principals.init_app(app)
+
+    # Init the Flask-Celery-Helper via app object
+    # Register the celery object into app object
+    flask_celery.init_app(app)
+ 
+    # Will be callback on_reminder_save when insert recond into table `reminder`.
+    event.listen(Reminder, 'after_insert', on_reminder_save)
+
 
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):

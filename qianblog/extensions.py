@@ -3,6 +3,8 @@ from flask_login import LoginManager
 from flask_openid import OpenID
 from flask_principal import Principal, Permission, RoleNeed
 
+from flask_celery import Celery
+from flask_mail import Mail
 
 # Create the Flask-Bcrypt's instance
 bcrypt = Bcrypt()
@@ -22,6 +24,11 @@ login_manager.login_message_category = "info"
 # Create the Flask-Principal's instance
 principals = Principal()
 
+# Create the Flask-Celery-Helper's instance
+flask_celery = Celery()
+
+# Create the Flask-Mail's instance
+mail = Mail()
 
 @login_manager.user_loader
 def load_user(user_id):
