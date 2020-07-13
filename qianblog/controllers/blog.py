@@ -8,6 +8,10 @@ from sqlalchemy import func,text
 from qianblog.models import db, User, Post, Tag, Comment, posts_tags
 from qianblog.forms import CommentForm,PostForm
 
+from flask_login import login_required, current_user
+
+from qianblog.extensions import poster_permission, admin_permission
+
 blog_blueprint = Blueprint(
     'blog',
     __name__,
@@ -115,14 +119,23 @@ def user(username):
 
 
 @blog_blueprint.route('/new', methods=['GET', 'POST'])
+@login_required
 def new_post():
     """View function for new_port."""
+
     form = PostForm()
 
+    # Ensure the user logged in.
+    # Flask-Login.current_user can be access current user.
+    if not current_user:
+        return redirect(url_for('main.login'))
+
+    # Will be execute when click the submit in the create a new post page.
     if form.validate_on_submit():
         new_post = Post(id=str(uuid4()), title=form.title.data)
         new_post.text = form.text.data
-        new_post.publish_date = datetime.now()
+        new_post.publish_date = datetime.datetime.now()
+        new_post.users = current_user
 
         db.session.add(new_post)
         db.session.commit()
@@ -132,23 +145,47 @@ def new_post():
                            form=form)
 
 
+
 @blog_blueprint.route('/edit/<string:id>', methods=['GET', 'POST'])
+@login_required
+@poster_permission.require(http_exception=403)
 def edit_post(id):
     """View function for edit_post."""
 
     post = Post.query.get_or_404(id)
-    form = PostForm()
 
-    if form.validate_on_submit():
-        post.title = form.title.data
-        post.text = form.text.data
-        post.publish_date = datetime.datetime.now()
+    # Ensure the user logged in.
+    if not current_user:
+        return redirect(url_for('main.login'))
 
-        # Update the post
-        db.session.add(post)
-        db.session.commit()
-        return redirect(url_for('blog.post', post_id=post.id))
+    # Only the post onwer can be edit this post.
+    if current_user != post.users:
+        return redirect(url_for('blog.post', post_id=id))
 
+    # 当 user 是 poster 或者 admin 时, 才能够编辑文章
+    # Admin can be edit the post.
+    permission = Permission(UserNeed(post.users.id))
+    if permission.can() or admin_permission.can():
+        form = PostForm()
+
+        #if current_user != post.users:
+        #    abort(403)
+
+        if form.validate_on_submit():
+            post.title = form.title.data
+            post.text = form.text.data
+            post.publish_date = datetime.now()
+
+            # Update the post
+            db.session.add(post)
+            db.session.commit()
+
+            return redirect(url_for('blog.post', post_id=post.id))
+    else:
+        abort(403)
+
+    # Still retain the original content, if validate is false.
     form.title.data = post.title
     form.text.data = post.text
     return render_template('edit_post.html', form=form, post=post)
+

@@ -38,7 +38,8 @@ def make_shell_context():
                 Post=models.Post,
                 Comment=models.Comment,
                 Tag=models.Tag,
-                Server=Server)
+                Server=Server,
+                Role=models.Role)
 
 
 if __name__ == '__main__':

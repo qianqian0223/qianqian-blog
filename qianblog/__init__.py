@@ -2,8 +2,10 @@ from flask import Flask, redirect,url_for
 
 from qianblog.models import db
 from qianblog.controllers import blog,main
+from flask_principal import identity_loaded, UserNeed, RoleNeed
 
-from qianblog.extensions import bcrypt
+from qianblog.extensions import bcrypt,openid,login_manager,principals
+from flask_login import current_user
 
 def create_app(object_name):
     """Create the app instance via `Factory Method`"""
@@ -16,6 +18,32 @@ def create_app(object_name):
     db.init_app(app)
     # Init the Flask-Bcrypt via app object
     bcrypt.init_app(app)
+    
+    # Init the Flask-OpenID via app object
+    openid.init_app(app)
+    # Init the Flask-Login via app object
+    login_manager.init_app(app)
+    # Init the Flask-Prinicpal via app object
+    principals.init_app(app)
+
+    @identity_loaded.connect_via(app)
+    def on_identity_loaded(sender, identity):
+        """Change the role via add the Need object into Role.
+
+           Need the access the app object.
+        """
+
+        # Set the identity user object
+        identity.user = current_user
+
+        # Add the UserNeed to the identity user object
+        if hasattr(current_user, 'id'):
+            identity.provides.add(UserNeed(current_user.id))
+
+        # Add each role to the identity user object
+        if hasattr(current_user, 'roles'):
+            for role in current_user.roles:
+                identity.provides.add(RoleNeed(role.name))
 
 
     # Register the Blueprint into app object
