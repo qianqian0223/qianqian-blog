@@ -2,6 +2,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from qianblog.extensions import bcrypt
 
+from qianblog.extensions import  cache
+
 # INIT the sqlalchemy object                            
 # Will be load the SQLALCHEMY_DATABASE_URL from config.py
 # SQLAlchemy 会自动的从 app 对象中的 DevConfig 中加载连接数据库的配置项
@@ -93,6 +95,25 @@ class User(db.Model):
         #return unicode(self.id)
         #python3  unicode 改为 str
         return str(self.id)
+    
+    @staticmethod
+    @cache.memoize(60)
+    def verify_auth_token(token):
+        """Validate the token whether is night."""
+
+        serializer = Serializer(
+            current_app.config['SECRET_KEY'])
+        try:
+            # serializer object already has tokens in itself and wait for 
+            # compare with token from HTTP Request /api/posts Method `POST`.
+            data = serializer.loads(token)
+        except SignatureExpired:
+            return None
+        except BadSignature:
+            return None
+
+        user = User.query.filter_by(id=data['id']).first()
+        return user
 
 
 class Role(db.Model):

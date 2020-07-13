@@ -21,5 +21,8 @@ class DevConfig(Config):
     # Celery <--> RabbitMQ connection
     CELERY_RESULT_BACKEND = "amqp://guest:guest@10.0.0.8:5672//"
     CELERY_BROKER_URL = "amqp://guest:guest@10.0.0.8:5672//"
+    
+    #### Flask-Cache's config
+    CACHE_TYPE = 'simple'
 
 

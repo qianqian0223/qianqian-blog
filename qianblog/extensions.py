@@ -6,6 +6,8 @@ from flask_principal import Principal, Permission, RoleNeed
 from flask_celery import Celery
 from flask_mail import Mail
 
+from flask_cache import Cache
+
 # Create the Flask-Bcrypt's instance
 bcrypt = Bcrypt()
 
@@ -29,6 +31,10 @@ flask_celery = Celery()
 
 # Create the Flask-Mail's instance
 mail = Mail()
+
+#### Create the Flask-Cache's instance
+cache = Cache()
+
 
 @login_manager.user_loader
 def load_user(user_id):

@@ -11,6 +11,8 @@ from qianblog.forms import CommentForm,PostForm
 from flask_login import login_required, current_user
 
 from qianblog.extensions import poster_permission, admin_permission
+from qianblog.extensions import  cache
+from flask import  request
 
 blog_blueprint = Blueprint(
     'blog',
@@ -21,7 +23,7 @@ blog_blueprint = Blueprint(
     url_prefix='/blog')
 
 
-
+@cache.cached(timeout=7200, key_prefix='sidebar_data')
 def sidebar_data():
     """Set the sidebar function."""
 
@@ -38,14 +40,23 @@ def sidebar_data():
         ).group_by(Tag).order_by(text('total DESC')).limit(5).all()
     return recent, top_tags
 
+def make_cache_key(*args, **kwargs):
+    """Dynamic creation the request url."""
+
+    path = request.path
+    args = str(hash(frozenset(request.args.items())))
+    return (path + args).encode('utf-8')
+
+
 @blog_blueprint.route('/')
 @blog_blueprint.route('/<int:page>')
+@cache.cached(timeout=60)
 def home(page=1):
     """View function for home page"""
 
     posts = Post.query.order_by(
         Post.publish_date.desc()
-    ).paginate(page, 10)
+    ).paginate(page, 8)
 
     recent, top_tags = sidebar_data()
 
@@ -55,6 +66,7 @@ def home(page=1):
                            top_tags=top_tags)
 
 @blog_blueprint.route('/post/<string:post_id>', methods=('GET', 'POST'))
+@cache.cached(timeout=60, key_prefix=make_cache_key)
 def post(post_id):
     """View function for post page"""
 

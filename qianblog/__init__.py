@@ -12,6 +12,8 @@ from sqlalchemy import event
 from qianblog.models import Reminder
 from qianblog.tasks import on_reminder_save
 
+from qianblog.extensions import cache
+
 def create_app(object_name):
     """Create the app instance via `Factory Method`"""
 
@@ -34,7 +36,11 @@ def create_app(object_name):
     # Init the Flask-Celery-Helper via app object
     # Register the celery object into app object
     flask_celery.init_app(app)
- 
+    
+    #### Init the Flask-Cache via app object
+    cache.init_app(app)
+
+
     # Will be callback on_reminder_save when insert recond into table `reminder`.
     event.listen(Reminder, 'after_insert', on_reminder_save)
 
