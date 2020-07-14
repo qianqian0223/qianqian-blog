@@ -9,6 +9,7 @@ from flask_mail import Mail
 from flask_cache import Cache
 
 from flask_assets import Environment, Bundle
+from flask_admin import Admin
 
 # Create the Flask-Bcrypt's instance
 bcrypt = Bcrypt()
@@ -36,6 +37,9 @@ mail = Mail()
 
 #### Create the Flask-Cache's instance
 cache = Cache()
+
+#### Create the Flask-Admin's instance
+flask_admin = Admin()
 
 
 @login_manager.user_loader

@@ -1,6 +1,6 @@
 from flask import Flask, redirect,url_for
 
-from qianblog.models import db
+
 from qianblog.controllers import blog,main
 from flask_principal import identity_loaded, UserNeed, RoleNeed
 
@@ -9,11 +9,16 @@ from flask_login import current_user
 from qianblog.extensions import flask_celery
 from sqlalchemy import event
 
-from qianblog.models import Reminder
-from qianblog.tasks import on_reminder_save
 
-from qianblog.extensions import cache
+from qianblog.tasks import on_reminder_save
+from qianblog.models import db, User, Post, Role, Tag, Reminder
+#, BrowseVolume
 from qianblog.extensions import assets_env, main_js, main_css
+
+from qianblog.extensions import  cache, flask_admin
+#restful_api,debug_toolbar, 
+
+from qianblog.controllers.admin import CustomView, CustomModelView
 
 def create_app(object_name):
     """Create the app instance via `Factory Method`"""
@@ -41,6 +46,19 @@ def create_app(object_name):
     #### Init the Flask-Cache via app object
     cache.init_app(app)
     
+    
+    #### Init the Flask-Admin via app object
+    flask_admin.init_app(app)
+    # Register view function `CustomView` into Flask-Admin
+    flask_admin.add_view(CustomView(name='Custom'))
+    # Register view function `CustomModelView` into Flask-Admin
+    models = [Role, Tag, Reminder]
+    for model in models:
+        flask_admin.add_view(
+            CustomModelView(model, db.session, category='Models'))   
+
+
+
     """Create the app instance via `Factory Method`"""
 
     #### Init the Flask-Assets via app object

@@ -170,11 +170,16 @@ class Tag(db.Model):
     __tablename__ = 'tags'
     id = db.Column(db.String(45), primary_key=True)
     name = db.Column(db.String(255))
-
+    
+    
     def __init__(self,id, name):
         self.id = id
         self.name = name
-
+    """
+    def __init__(self):
+        self.id = str(uuid4())
+    """
+    
     def __repr__(self):
         return "<Model Tag `{}`>".format(self.name)
 
