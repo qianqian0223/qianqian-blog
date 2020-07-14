@@ -24,5 +24,10 @@ class DevConfig(Config):
     
     #### Flask-Cache's config
     CACHE_TYPE = 'simple'
+    
+    #### Flask-Assets's config
+    # Can not compress the CSS/JS on Dev environment.
+    ASSETS_DEBUG = True
+
 
 

@@ -13,6 +13,7 @@ from qianblog.models import Reminder
 from qianblog.tasks import on_reminder_save
 
 from qianblog.extensions import cache
+from qianblog.extensions import assets_env, main_js, main_css
 
 def create_app(object_name):
     """Create the app instance via `Factory Method`"""
@@ -39,6 +40,13 @@ def create_app(object_name):
     
     #### Init the Flask-Cache via app object
     cache.init_app(app)
+    
+    """Create the app instance via `Factory Method`"""
+
+    #### Init the Flask-Assets via app object
+    assets_env.init_app(app)
+    assets_env.register('main_js', main_js)
+    assets_env.register('main_css', main_css)
 
 
     # Will be callback on_reminder_save when insert recond into table `reminder`.

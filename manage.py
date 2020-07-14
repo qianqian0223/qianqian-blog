@@ -7,6 +7,10 @@ from flask_migrate import Migrate, MigrateCommand
 from qianblog import create_app
 from qianblog import models
 
+from flask_assets import ManageAssets
+from qianblog.extensions import assets_env
+
+
 # Get the ENV from os_environ
 env = os.environ.get('BLOG_ENV', 'dev')
 # Create thr app instance via Factory Method
@@ -22,6 +26,9 @@ migrate = Migrate(app, models.db)
 # Create some new commands
 manager.add_command("server", Server(host='10.0.0.8', port=9999))
 manager.add_command("db", MigrateCommand)
+
+# Pack the static file
+manager.add_command('assets', ManageAssets(assets_env))
 
 
 @manager.shell

@@ -8,6 +8,8 @@ from flask_mail import Mail
 
 from flask_cache import Cache
 
+from flask_assets import Environment, Bundle
+
 # Create the Flask-Bcrypt's instance
 bcrypt = Bcrypt()
 
@@ -49,3 +51,18 @@ def load_user(user_id):
 admin_permission = Permission(RoleNeed('admin'))
 poster_permission = Permission(RoleNeed('poster'))
 default_permission = Permission(RoleNeed('default'))
+
+#### Create the Flask-Assets's instance
+assets_env = Environment()
+# Define the set for js and css file.
+main_css = Bundle(
+    'css/bootstrap.css',
+    'css/bootstrap-theme.css',
+    filters='cssmin',
+    output='assets/css/common.css')
+
+main_js = Bundle(
+    'js/bootstrap.js',
+    filters='jsmin',
+    output='assets/js/common.js')
+
