@@ -1,6 +1,6 @@
 from flask import Flask, redirect,url_for
 
-
+import os 
 from qianblog.controllers import blog,main
 from flask_principal import identity_loaded, UserNeed, RoleNeed
 
@@ -19,6 +19,8 @@ from qianblog.extensions import  cache, flask_admin
 #restful_api,debug_toolbar, 
 
 from qianblog.controllers.admin import CustomView, CustomModelView
+
+from qianblog.controllers import admin
 
 def create_app(object_name):
     """Create the app instance via `Factory Method`"""
@@ -56,6 +58,13 @@ def create_app(object_name):
     for model in models:
         flask_admin.add_view(
             CustomModelView(model, db.session, category='Models'))   
+    
+    # Register and define path of File System for Flask-Admin
+    flask_admin.add_view(
+        admin.CustomFileAdmin(
+            os.path.join(os.path.dirname(__file__), 'static'),
+            '/static',
+            name='Static Files'))
 
 
 
