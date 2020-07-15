@@ -2,6 +2,7 @@ from flask_restful import reqparse
 
 post_get_parser = reqparse.RequestParser()
 post_post_parser = reqparse.RequestParser()
+post_put_parser = reqparse.RequestParser()
 
 post_get_parser.add_argument(
     'page',
@@ -37,6 +38,26 @@ post_post_parser.add_argument(
     type=str,
     required=True,
     help='Auth Token is required to create posts.')
+
+post_put_parser.add_argument(
+    'title',
+    type=str)
+
+post_put_parser.add_argument(
+    'text',
+    type=str)
+
+post_put_parser.add_argument(
+    'tags',
+    type=str,
+    action='append')
+
+post_put_parser.add_argument(
+    'token',
+    type=str,
+    required=True,
+    help='Auth Token is required to update the posts.')
+
 
 ########################################################
 # User's HTTP Request Parser
