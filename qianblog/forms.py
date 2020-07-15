@@ -5,6 +5,7 @@ import re
 from wtforms import ValidationError
 
 from wtforms import (
+    widgets,
     StringField,
     TextField,
     TextAreaField,
@@ -125,3 +126,23 @@ class OpenIDForm(FlaskForm):
     """OpenID Form."""
 
     openid_url = StringField('OpenID URL', [DataRequired(), URL()])
+    
+    
+
+
+
+class CKTextAreaWidget(widgets.TextArea):
+    """CKeditor form for Flask-Admin."""
+
+    def __call__(self, field, **kwargs):
+        """Define callable type(class)."""
+
+        # Add a new class property ckeditor: `<input class=ckeditor ...>`
+        kwargs.setdefault('class_', 'ckeditor')
+        return super(CKTextAreaWidget, self).__call__(field, **kwargs)
+        
+class CKTextAreaField(TextAreaField):
+    """Create a new Field type."""
+
+    # Add a new widget `CKTextAreaField` inherit from TextAreaField.
+    widget = CKTextAreaWidget()
