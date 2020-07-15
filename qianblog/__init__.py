@@ -15,12 +15,16 @@ from qianblog.models import db, User, Post, Role, Tag, Reminder
 #, BrowseVolume
 from qianblog.extensions import assets_env, main_js, main_css
 
-from qianblog.extensions import  cache, flask_admin
-#restful_api,debug_toolbar, 
+from qianblog.extensions import  restful_api,cache, flask_admin
+#debug_toolbar, 
+
 
 from qianblog.controllers.admin import CustomView, CustomModelView
 
 from qianblog.controllers import admin
+
+from qianblog.controllers.flask_restful.posts import PostApi
+from qianblog.controllers.flask_restful.auth import AuthApi
 
 def create_app(object_name):
     """Create the app instance via `Factory Method`"""
@@ -65,6 +69,22 @@ def create_app(object_name):
             os.path.join(os.path.dirname(__file__), 'static'),
             '/static',
             name='Static Files'))
+            
+    #### Init the Flask-Restful via app object
+    # Define the route of restful_api
+    restful_api.add_resource(
+        PostApi,
+        '/api/posts',
+        '/api/posts/<string:post_id>',
+        endpoint='restful_api_post')
+        
+    restful_api.add_resource(
+        AuthApi,
+        '/api/auth',
+        endpoint='restful_api_auth')
+
+        
+    restful_api.init_app(app)
 
 
 

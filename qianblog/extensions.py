@@ -10,6 +10,7 @@ from flask_cache import Cache
 
 from flask_assets import Environment, Bundle
 from flask_admin import Admin
+from flask_restful import Api
 
 # Create the Flask-Bcrypt's instance
 bcrypt = Bcrypt()
@@ -40,6 +41,10 @@ cache = Cache()
 
 #### Create the Flask-Admin's instance
 flask_admin = Admin()
+
+#### Create the Flask-Restful's instance
+restful_api = Api()
+
 
 
 @login_manager.user_loader
